@@ -214,8 +214,9 @@ function createHeatmap(pricePerGB, minRequests, maxRequests, minSize, maxSize, n
                     callbacks: {
                         label: (context) => {
                             const point = context.raw;
+                            console.log(typeof point.v.toFixed(2),typeof point.numRequests)
                             return [
-                                `Cost: $${point.v.toFixed(2)}`,
+                                `Cost: $${Number(point.v.toFixed(2)).toLocaleString()}`,
                                 `Number of Requests: ${point.numRequests.toLocaleString()}`,
                                 `Average Request Size: ${point.size.toFixed(1)} MB`,
                                 `Price per GB: $${point.pricePerGB.toFixed(2)}`
@@ -250,7 +251,7 @@ function createHeatmap(pricePerGB, minRequests, maxRequests, minSize, maxSize, n
                         ctx.font = '12px Arial';
                         ctx.textAlign = 'center';
                         ctx.textBaseline = 'middle';
-                        ctx.fillText(`$${v.toFixed(2)}`, xCoord, yCoord);
+                        ctx.fillText(`$${Number(v.toFixed(2)).toLocaleString()}`, xCoord, yCoord);
                         ctx.restore();
                     });
                 });
