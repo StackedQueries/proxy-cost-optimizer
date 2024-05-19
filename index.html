@@ -72,10 +72,10 @@
     <label for="maxRequests">Max Requests: 
         <input type="number" id="maxRequests" value="20000000" step="100000" oninput="updateHeatmap()">
     </label>
-    <label for="minSize">Min Request Size (MB): 
+    <label for="minSize">Min Payload Size (MB): 
         <input type="number" id="minSize" value="0.5" step="0.1" oninput="updateHeatmap()">
     </label>
-    <label for="maxSize">Max Request Size (MB): 
+    <label for="maxSize">Max Payload Size (MB): 
         <input type="number" id="maxSize" value="2.5" step="0.1" oninput="updateHeatmap()">
     </label>
     <label for="pricePerGB">Price per GB ($): 
@@ -193,7 +193,7 @@ function createHeatmap(pricePerGB, minRequests, maxRequests, minSize, maxSize, n
                 y: {
                     title: {
                         display: true,
-                        text: 'Average Request Size (MB)',
+                        text: 'Average Payload Size (MB)',
                     },
                     ticks: {
                         callback: (value, index) => [...requestSizeRange][index] ? [...requestSizeRange][index].toFixed(1) : '',
