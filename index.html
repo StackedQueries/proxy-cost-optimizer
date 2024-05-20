@@ -1,282 +1,379 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Proxy Data Usage Cost Heatmap</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-chart-matrix"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #f4f4f9;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 90vh;
-        }
-        h2 {
-            text-align: center;
-            color: #333;
-        }
-        .controls {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 1000px;
-        }
-        .controls label {
-            margin: 10px;
-            font-weight: bold;
-            color: #555;
-        }
-        .controls input {
-            padding: 5px;
-            font-size: 1em;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .chart-container {
-            width: 100%;
-            height: calc(100% - 160px); /* Adjust height to account for controls and padding */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        canvas {
-            width: 100%;
-            height: 100%;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f9;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 90vh;
+      }
+      h2 {
+        text-align: center;
+        color: #333;
+      }
+      .controls {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: wrap;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 1000px;
+      }
+      .controls label {
+        margin: 10px;
+        font-weight: bold;
+        color: #555;
+      }
+      .controls input {
+        padding: 5px;
+        font-size: 1em;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      .chart-container {
+        width: 100%;
+        height: calc(
+          100% - 160px
+        ); /* Adjust height to account for controls and padding */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      }
     </style>
-</head>
-<body>
-<div class="controls">
-    <label for="numColumns">Number of Columns: 
-        <input type="number" id="numColumns" value="20" step="1" oninput="updateHeatmap()">
-    </label>
-    <label for="numRows">Number of Rows: 
-        <input type="number" id="numRows" value="20" step="1" oninput="updateHeatmap()">
-    </label>
-    <label for="minRequests">Min Requests: 
-        <input type="number" id="minRequests" value="100000" step="10000" oninput="updateHeatmap()">
-    </label>
-    <label for="maxRequests">Max Requests: 
-        <input type="number" id="maxRequests" value="2000000" step="10000" oninput="updateHeatmap()">
-    </label>
-    <label for="minSize">Min Payload Size (MB): 
-        <input type="number" id="minSize" value="0.5" step="0.1" oninput="updateHeatmap()">
-    </label>
-    <label for="maxSize">Max Payload Size (MB): 
-        <input type="number" id="maxSize" value="2.5" step="0.1" oninput="updateHeatmap()">
-    </label>
-    <label for="pricePerGB">Price per GB ($): 
-        <input type="number" id="pricePerGB" value="8" step="0.1" oninput="updateHeatmap()">
-    </label>
+  </head>
+  <body>
+    <div class="controls">
+      <label for="numColumns"
+        >Number of Columns:
+        <input
+          type="number"
+          id="numColumns"
+          value="20"
+          step="1"
+          oninput="updateHeatmap()"
+        />
+      </label>
+      <label for="numRows"
+        >Number of Rows:
+        <input
+          type="number"
+          id="numRows"
+          value="20"
+          step="1"
+          oninput="updateHeatmap()"
+        />
+      </label>
+      <label for="minRequests"
+        >Min Requests:
+        <input
+          type="number"
+          id="minRequests"
+          value="100000"
+          step="10000"
+          oninput="updateHeatmap()"
+        />
+      </label>
+      <label for="maxRequests"
+        >Max Requests:
+        <input
+          type="number"
+          id="maxRequests"
+          value="2000000"
+          step="10000"
+          oninput="updateHeatmap()"
+        />
+      </label>
+      <label for="minSize"
+        >Min Payload Size (MB):
+        <input
+          type="number"
+          id="minSize"
+          value="0.5"
+          step="0.1"
+          oninput="updateHeatmap()"
+        />
+      </label>
+      <label for="maxSize"
+        >Max Payload Size (MB):
+        <input
+          type="number"
+          id="maxSize"
+          value="2.5"
+          step="0.1"
+          oninput="updateHeatmap()"
+        />
+      </label>
+      <label for="pricePerGB"
+        >Price per GB ($):
+        <input
+          type="number"
+          id="pricePerGB"
+          value="8"
+          step="0.1"
+          oninput="updateHeatmap()"
+        />
+      </label>
+    </div>
 
-</div>
+    <div class="chart-container">
+      <canvas id="costHeatmap"></canvas>
+    </div>
 
-<div class="chart-container">
-    <canvas id="costHeatmap"></canvas>
-</div>
+    <script>
+      const ctx = document.getElementById("costHeatmap").getContext("2d");
+      let costHeatmap;
 
-<script>
-const ctx = document.getElementById('costHeatmap').getContext('2d');
-let costHeatmap;
+      function resizeCanvas() {
+        const canvas = document.getElementById("costHeatmap");
+        const container = document.querySelector(".chart-container");
+        canvas.width = container.clientWidth;
+        canvas.height = container.clientHeight;
+      }
 
-function resizeCanvas() {
-    const canvas = document.getElementById('costHeatmap');
-    const container = document.querySelector('.chart-container');
-    canvas.width = container.clientWidth;
-    canvas.height = container.clientHeight;
-}
+      function getAverage(data) {
+        const sum = data.reduce((a, b) => a + b, 0);
+        return sum / data.length || 0;
+      }
 
-function getAverage(data) {
-    const sum = data.reduce((a, b) => a + b, 0);
-    return (sum / data.length) || 0;
-}
+      function getColor(value, median) {
+        const green = { r: 0, g: 255, b: 0 };
+        const red = { r: 255, g: 0, b: 0 };
+        const ratio = Math.min(Math.max(value / median, 0), 1);
+        const r = Math.round(green.r + ratio * (red.r - green.r));
+        const g = Math.round(green.g + ratio * (red.g - green.g));
+        const b = Math.round(green.b + ratio * (red.b - green.b));
+        return `rgb(${r},${g},${b})`;
+      }
 
-function getColor(value, median) {
-    const green = { r: 0, g: 255, b: 0 };
-    const red = { r: 255, g: 0, b: 0 };
-    const ratio = Math.min(Math.max(value / median, 0), 1);
-    const r = Math.round(green.r + ratio * (red.r - green.r));
-    const g = Math.round(green.g + ratio * (red.g - green.g));
-    const b = Math.round(green.b + ratio * (red.b - green.b));
-    return `rgb(${r},${g},${b})`;
-}
+      function createHeatmap(
+        pricePerGB,
+        minRequests,
+        maxRequests,
+        minSize,
+        maxSize,
+        numColumns,
+        numRows
+      ) {
+        resizeCanvas();
 
-function createHeatmap(pricePerGB, minRequests, maxRequests, minSize, maxSize, numColumns, numRows) {
-    resizeCanvas();
+        if (costHeatmap) {
+          costHeatmap.destroy();
+        }
 
-    if (costHeatmap) {
-        costHeatmap.destroy();
-    }
+        const numRequestsRange = Array.from(
+          { length: numColumns },
+          (_, i) =>
+            minRequests + (i * (maxRequests - minRequests)) / (numColumns - 1)
+        );
+        const requestSizeRange = Array.from(
+          { length: numRows },
+          (_, i) => minSize + (i * (maxSize - minSize)) / (numRows - 1)
+        );
 
-    const numRequestsRange = Array.from({ length: numColumns }, (_, i) => minRequests + i * (maxRequests - minRequests) / (numColumns - 1));
-    const requestSizeRange = Array.from({ length: numRows }, (_, i) => minSize + i * (maxSize - minSize) / (numRows - 1));
-
-    const data = numRequestsRange.flatMap((numRequests, x) => {
-        return [...requestSizeRange].reverse().map((size, y) => {
+        const data = numRequestsRange.flatMap((numRequests, x) => {
+          return [...requestSizeRange].reverse().map((size, y) => {
             const totalDataUsageMB = numRequests * size;
             const totalDataUsageGB = totalDataUsageMB / 1024;
             const totalCost = totalDataUsageGB * pricePerGB;
 
             return {
-                x: x,
-                y: y,
-                v: totalCost,
-                numRequests,
-                size,
-                pricePerGB,
+              x: x,
+              y: y,
+              v: totalCost,
+              numRequests,
+              size,
+              pricePerGB,
             };
+          });
         });
-    });
 
-    const costs = data.map(d => d.v);
-    const medianCost = getAverage(costs);
+        const costs = data.map((d) => d.v);
+        const medianCost = getAverage(costs);
 
-    costHeatmap = new Chart(ctx, {
-        type: 'matrix',
-        data: {
-            datasets: [{
-                label: 'Cost Heatmap',
+        costHeatmap = new Chart(ctx, {
+          type: "matrix",
+          data: {
+            datasets: [
+              {
+                label: "Cost Heatmap",
                 data: data,
                 backgroundColor: (context) => {
-                    const value = context.dataset.data[context.dataIndex].v;
-                    return getColor(value, medianCost);
+                  const value = context.dataset.data[context.dataIndex].v;
+                  return getColor(value, medianCost);
                 },
                 borderWidth: 1,
-                borderColor: 'black',
+                borderColor: "black",
                 width: (context) => {
-                    const a = context.chart.chartArea;
-                    if (!a) return 0;
-                    return (a.right - a.left) / numRequestsRange.length;
+                  const a = context.chart.chartArea;
+                  if (!a) return 0;
+                  return (a.right - a.left) / numRequestsRange.length;
                 },
                 height: (context) => {
-                    const a = context.chart.chartArea;
-                    if (!a) return 0;
-                    return (a.bottom - a.top) / requestSizeRange.length;
+                  const a = context.chart.chartArea;
+                  if (!a) return 0;
+                  return (a.bottom - a.top) / requestSizeRange.length;
                 },
-            }]
-        },
-        options: {
+              },
+            ],
+          },
+          options: {
             responsive: true,
             maintainAspectRatio: false,
             scales: {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Number of Requests',
-                    },
-                    ticks: {
-                        callback: (value, index) => numRequestsRange[index] ? numRequestsRange[index].toLocaleString() : '',
-                        autoSkip: false,
-                        stepSize: 1,
-                        padding: 10,
-                    },
-                    grid: {
-                        display: false,
-                    },
-                    offset: true,
-                    min: 0,
-                    max: numRequestsRange.length - 1,
+              x: {
+                title: {
+                  display: true,
+                  text: "Number of Requests",
                 },
-                y: {
-                    title: {
-                        display: true,
-                        text: 'Average Payload Size (MB)',
-                    },
-                    ticks: {
-                        callback: (value, index) => [...requestSizeRange][index] ? [...requestSizeRange][index].toFixed(1) : '',
-                        autoSkip: false,
-                        stepSize: 1,
-                        padding: 10,
-                    },
-                    grid: {
-                        display: false,
-                    },
-                    offset: true,
-                    min: 0,
-                    max: requestSizeRange.length - 1,
+                ticks: {
+                  callback: (value, index) =>
+                    numRequestsRange[index]
+                      ? numRequestsRange[index].toLocaleString()
+                      : "",
+                  autoSkip: false,
+                  stepSize: 1,
+                  padding: 10,
                 },
+                grid: {
+                  display: false,
+                },
+                offset: true,
+                min: 0,
+                max: numRequestsRange.length - 1,
+              },
+              y: {
+                title: {
+                  display: true,
+                  text: "Average Payload Size (MB)",
+                },
+                ticks: {
+                  callback: (value, index) =>
+                    [...requestSizeRange][index]
+                      ? [...requestSizeRange][index].toFixed(1)
+                      : "",
+                  autoSkip: false,
+                  stepSize: 1,
+                  padding: 10,
+                },
+                grid: {
+                  display: false,
+                },
+                offset: true,
+                min: 0,
+                max: requestSizeRange.length - 1,
+              },
             },
             plugins: {
-                tooltip: {
-                    callbacks: {
-                        label: (context) => {
-                            const point = context.raw;
-                            console.log(typeof point.v.toFixed(2),typeof point.numRequests)
-                            return [
-                                `Cost: $${Number(point.v.toFixed(2)).toLocaleString()}`,
-                                `Number of Requests: ${point.numRequests.toLocaleString()}`,
-                                `Average Request Size: ${point.size.toFixed(1)} MB`,
-                                `Price per GB: $${point.pricePerGB.toFixed(2)}`
-                            ];
-                        },
-                    },
+              tooltip: {
+                callbacks: {
+                  title: () => null,
+                  label: (context) => {
+                    const point = context.raw;
+                    return [
+                      `Cost: $${Number(point.v.toFixed(2)).toLocaleString()}`,
+                      `Number of Requests: ${point.numRequests.toLocaleString()}`,
+                      `Average Request Size: ${point.size.toFixed(1)} MB`,
+                      `Price per GB: $${point.pricePerGB.toFixed(2)}`,
+                    ];
+                  },
                 },
-                legend: {
-                    display: false,
-                },
+              },
+              legend: {
+                display: false,
+              },
             },
             elements: {
-                rectangle: {
-                    hoverBackgroundColor: 'rgba(0,0,0,0.1)',
-                },
+              rectangle: {
+                hoverBackgroundColor: "rgba(0,0,0,0.1)",
+              },
             },
-        },
-        plugins: [{
-            id: 'matrix-text',
-            afterDatasetsDraw: chart => {
+          },
+          plugins: [
+            {
+              id: "matrix-text",
+              afterDatasetsDraw: (chart) => {
                 const ctx = chart.ctx;
-                chart.data.datasets.forEach(dataset => {
-                    dataset.data.forEach(data => {
-                        const { x, y, v } = data;
-                        const xCoord = chart.scales.x.getPixelForValue(x);
-                        const yCoord = chart.scales.y.getPixelForValue(y);
-                        const width = chart.scales.x.width / chart.scales.x.ticks.length;
-                        const height = chart.scales.y.height / chart.scales.y.ticks.length;
+                chart.data.datasets.forEach((dataset) => {
+                  dataset.data.forEach((data) => {
+                    const { x, y, v } = data;
+                    const xCoord = chart.scales.x.getPixelForValue(x);
+                    const yCoord = chart.scales.y.getPixelForValue(y);
+                    const width =
+                      chart.scales.x.width / chart.scales.x.ticks.length;
+                    const height =
+                      chart.scales.y.height / chart.scales.y.ticks.length;
 
-                        ctx.save();
-                        ctx.fillStyle = 'black';
-                        ctx.font = '12px Arial';
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
-                        ctx.fillText(`$${Number(v.toFixed(2)).toLocaleString()}`, xCoord, yCoord);
-                        ctx.restore();
-                    });
+                    ctx.save();
+                    ctx.fillStyle = "black";
+                    ctx.font = "12px Arial";
+                    ctx.textAlign = "center";
+                    ctx.textBaseline = "middle";
+                    ctx.fillText(
+                      `$${Number(v.toFixed(2)).toLocaleString()}`,
+                      xCoord,
+                      yCoord
+                    );
+                    ctx.restore();
+                  });
                 });
-            }
-        }],
-    });
-}
+              },
+            },
+          ],
+        });
+      }
 
-function updateHeatmap() {
-    const pricePerGB = parseFloat(document.getElementById('pricePerGB').value);
-    const minRequests = parseFloat(document.getElementById('minRequests').value);
-    const maxRequests = parseFloat(document.getElementById('maxRequests').value);
-    const minSize = parseFloat(document.getElementById('minSize').value);
-    const maxSize = parseFloat(document.getElementById('maxSize').value);
-    const numColumns = parseInt(document.getElementById('numColumns').value, 10);
-    const numRows = parseInt(document.getElementById('numRows').value, 10);
+      function updateHeatmap() {
+        const pricePerGB = parseFloat(
+          document.getElementById("pricePerGB").value
+        );
+        const minRequests = parseFloat(
+          document.getElementById("minRequests").value
+        );
+        const maxRequests = parseFloat(
+          document.getElementById("maxRequests").value
+        );
+        const minSize = parseFloat(document.getElementById("minSize").value);
+        const maxSize = parseFloat(document.getElementById("maxSize").value);
+        const numColumns = parseInt(
+          document.getElementById("numColumns").value,
+          10
+        );
+        const numRows = parseInt(document.getElementById("numRows").value, 10);
 
-    createHeatmap(pricePerGB, minRequests, maxRequests, minSize, maxSize, numColumns, numRows);
-}
+        createHeatmap(
+          pricePerGB,
+          minRequests,
+          maxRequests,
+          minSize,
+          maxSize,
+          numColumns,
+          numRows
+        );
+      }
 
-window.addEventListener('resize', resizeCanvas);
-document.addEventListener('DOMContentLoaded', () => {
-    updateHeatmap();
-});
-</script>
-
-</body>
+      window.addEventListener("resize", resizeCanvas);
+      document.addEventListener("DOMContentLoaded", () => {
+        updateHeatmap();
+      });
+    </script>
+  </body>
 </html>
