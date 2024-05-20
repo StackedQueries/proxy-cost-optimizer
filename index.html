@@ -61,13 +61,14 @@
     </style>
   </head>
   <body>
+    <h2>Proxy Usage Calculator</h2>
     <div class="controls">
       <label for="numColumns"
         >Number of Columns:
         <input
           type="number"
           id="numColumns"
-          value="20"
+          value="5"
           step="1"
           oninput="updateHeatmap()"
         />
@@ -77,7 +78,7 @@
         <input
           type="number"
           id="numRows"
-          value="20"
+          value="5"
           step="1"
           oninput="updateHeatmap()"
         />
@@ -97,7 +98,7 @@
         <input
           type="number"
           id="maxRequests"
-          value="2000000"
+          value="500000"
           step="10000"
           oninput="updateHeatmap()"
         />
@@ -375,5 +376,6 @@
         updateHeatmap();
       });
     </script>
+    <a href="https://tyler-richards.com/proxy-cost-optimizer/" target="_blank">Check out the full size chart here</a>
   </body>
 </html>
